@@ -16,15 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (password_verify($password, $stored_hashed_password)) {
             $_SESSION['username'] = $row['username'];
             $_SESSION['userID'] = $row['userID'];
-<<<<<<< HEAD:php/login.php
             echo json_encode(array("status" => "success"));
-=======
-            $_SESSION['email'] = $row['email'];
-            header("Location: main.php");
-            exit();
-
-
->>>>>>> 627d42e19b974eaa807060d461a0fdb960483974:login.php
         } else {
             echo json_encode(array("status" => "error", "type" => "password", "message" => "Password does not match username"));
         }

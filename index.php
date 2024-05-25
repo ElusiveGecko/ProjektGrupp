@@ -15,22 +15,7 @@ $_SESSION['userID'] = null;
     <script src="js/ajax_requests.js" defer></script>
 </head>
 
-<<<<<<< HEAD
 <body>
-=======
-<?php
-} else {
-?>
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Login/Register</title>
-        <link rel="stylesheet" href="style.css">
-        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-    </head>
->>>>>>> 627d42e19b974eaa807060d461a0fdb960483974
 
     <div class="header-container">
         <nav class="header">
@@ -41,7 +26,6 @@ $_SESSION['userID'] = null;
         </nav>
     </div>
 
-<<<<<<< HEAD
     <div class="home">
         <div class="home-container">
             <div class="home-content">
@@ -52,31 +36,6 @@ $_SESSION['userID'] = null;
                 <div class="btn-container">
                     <button class="register-module-btn" id="account-btn">Get Started Today!</button>
                 </div>
-=======
-        <div class="register-module" id="register-module-id">
-            <div class="module-content">
-                <span class="register-close-btn">&times;</span>
-                <form action="register.php" method="POST" class="register-form" id="register-form-id">
-                    <div class="form-validation">
-                        <input type="text" class="module-input" id="register-username" name="username" placeholder="Enter your username">
-                        <p>Error Message</p>
-                    </div>
-                    <div class="form-validation">
-                        <input type="text" class="module-input" id="register-email" name="email" placeholder="Enter your email">
-                        <p>Error Message</p>
-                    </div>
-                    <div class="form-validation">
-                        <input type="password" class="module-input" id="register-password" name="password" placeholder="Enter your password">
-                        <p>Error Message</p>
-                    </div>
-                    <div class="form-validation">
-                        <input type="password" class="module-input" id="register-password-conf" name="password-confirm" placeholder="Confirm your password">
-                        <p>Error Message</p>
-                    </div>
-                    <div class="g-recaptcha" data-sitekey="6LcETuYpAAAAAJQSYwpU2nkdbGc_8hTF740s3QYu"></div>
-                    <input type="submit" class="register-input-btn" value="Sign Up">
-                </form>
->>>>>>> 627d42e19b974eaa807060d461a0fdb960483974
             </div>
             <div class="home-img-container"><img src="images/home_img.svg" id="home-img"></div>
         </div>
