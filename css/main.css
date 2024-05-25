@@ -1,0 +1,34 @@
+.container {
+    width: 80%;
+    margin: 0 auto;
+}
+
+.advert-form {
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 10px;
+}
+
+.adverts {
+    display: flex;
+    flex-direction: column;
+}
+
+.advert {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.uploaded-image {
+    max-width: 300px;  
+    max-height: 300px; 
+    width: auto;
+    height: auto;
+    display: block;
+    margin: 10px 0;
+}

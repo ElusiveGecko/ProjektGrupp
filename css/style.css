@@ -1,0 +1,66 @@
+@import url(account_forms.css);
+@import url(main.css);
+@import url(login_page.css);
+
+:root {
+    --darkgrey: #212329;
+    --brightred: #F9423D;
+    --white: #fff;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.header-container {
+    width: 100%;
+    background-color: var(--darkgrey);
+}
+
+.header-container {
+    width: 100%;
+    background-color: var(--darkgrey);
+}
+
+.header {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    height: 80px;
+    width: 95%;
+    margin: 0 auto;
+}
+
+#header-logo {
+    color: white;
+    justify-self: start;
+    margin-left: 15px;
+}
+
+#header-logo:hover {
+    cursor: pointer;
+}
+
+.header-btns {
+    display: grid;
+    justify-self: end;
+    margin-right: 20%;
+}
+
+#header-btns {
+    background-color: var(--brightred);
+    color: var(--white);
+    padding: 6px 16px;
+    border-radius: 4px;
+}
+
+.header-link {
+    text-decoration: none;
+}
+
+#header-btns:hover {
+    background-color: var(--darkgrey);
+    border: 1px solid var(--brightred);
+    cursor: pointer;
+}
