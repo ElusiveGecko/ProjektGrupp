@@ -13,11 +13,13 @@ document.addEventListener('DOMContentLoaded', () => {
         formValidation.className = 'form-validation error';
         const errorMessage = formValidation.querySelector('p');
         errorMessage.innerText = message;
+        console.log(`Error: ${message}`); // Debugging statement
     }
 
     function showValid(input){
         const formValidation = input.parentElement;
         formValidation.className = 'form-validation valid';
+        console.log(`Valid: ${input.name}`); // Debugging statement
     }
 
     function checkRequired(inputArr){
@@ -25,13 +27,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if(input.value.trim() === '') {
                 showError(input, `${getFieldName(input)} is required`);
             }
-        })
+        });
     }
 
     function checkEmail(input) {
         const emailRegex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
         if(!emailRegex.test(input.value)){
             showError(input, "Invalid email");
+        } else {
+            showValid(input);
         }
     }
 
@@ -40,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if(!passwordRegex.test(pass.value)) {
             showError(pass, "Invalid password");
         } else {
-            showValid(pass)
+            showValid(pass);
         }
     }
 
@@ -62,28 +66,71 @@ document.addEventListener('DOMContentLoaded', () => {
 
     registerForm.addEventListener('submit', (e) => {
         e.preventDefault(); // Prevent default form submission
+        console.log("Register form submitted"); // Debugging statement
+
         checkRequired([usernameInput, emailInput, passwordInput, passwordConfInput]);
         checkEmail(emailInput);
         checkPassword(passwordInput);
         checkConfPassword(passwordInput, passwordConfInput);
 
+        let hasErrors = false;
         formValidations.forEach(formValidation => {
             if (formValidation.classList.contains('error')) {
-                e.preventDefault();
+                hasErrors = true;
             }
+        });
+
+        if (hasErrors) {
+            console.log("Form has errors"); // Debugging statement
+            return;
+        }
+
+        const recaptchaResponse = grecaptcha.getResponse();
+        if (recaptchaResponse.length === 0) {
+            alert("Please complete the captcha");
+            return;
+        }
+
+        console.log("Captcha response:", recaptchaResponse); // Debugging statement
+
+        const formData = new FormData(registerForm);
+        formData.append('g-recaptcha-response', recaptchaResponse);
+
+        fetch('php/register.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Response data:", data); // Debugging statement
+            if (data.status === 'success') {
+                alert('Registration successful');
+            } else {
+                alert(`Error: ${data.message}`);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
         });
     });
 
     loginForm.addEventListener('submit', (e) => {
         e.preventDefault(); // Prevent default form submission
+        console.log("Login form submitted"); // Debugging statement
+
         checkRequired([loginUsernameInput, loginPasswordInput]);
-        const formValidations = document.querySelectorAll('.form-validation');
+        let hasErrors = false;
         formValidations.forEach(formValidation => {
             if (formValidation.classList.contains('error')) {
-                e.preventDefault();
-                return;
+                hasErrors = true;
             }
         });
+
+        if (hasErrors) {
+            console.log("Form has errors"); // Debugging statement
+            return;
+        }
+
         loginUser(loginForm, showError, loginUsernameInput, loginPasswordInput);
     });
 
