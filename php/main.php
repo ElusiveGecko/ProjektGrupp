@@ -84,22 +84,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action'])) {
 
     if ($_POST['action'] == 'fetch') {
         $categoryFilter = isset($_POST['category']) ? intval($_POST['category']) : 0;
+        $searchTerm = isset($_POST['searchTerm']) ? htmlspecialchars($_POST['searchTerm']) : '';
+
+
         $query = "SELECT Adverts.*, Users.username, Categories.name as categoryName FROM Adverts JOIN Users ON Adverts.userID = Users.userID JOIN Categories ON Adverts.categoryID = Categories.id";
+        // Adds catg filter in database select if category is selected
         if ($categoryFilter > 0) {
             $query .= " WHERE Adverts.categoryID = :categoryID";
         }
+        // adds search term to title in database select if search term is not empty.  (consider an OR to search the advert text also)
+        if (!empty($searchTerm)) {
+            $query .= " AND Adverts.title LIKE :searchTerm";
+        }
         $query .= " ORDER BY created_at DESC";
+
         $stmt = $db->prepare($query);
+        //binding
         if ($categoryFilter > 0) {
             $stmt->bindValue(':categoryID', $categoryFilter, SQLITE3_INTEGER);
         }
+         if (!empty($searchTerm)) {
+             $stmt->bindValue(':searchTerm', '%' . $searchTerm . '%', SQLITE3_TEXT);
+         }
+
         $adverts = $stmt->execute();
         $result = [];
         while ($row = $adverts->fetchArray(SQLITE3_ASSOC)) {
             $result[] = $row;
         }
         echo json_encode($result);
+
         exit();
+
     }
 }
 
@@ -153,6 +169,10 @@ $categories = $db->query("SELECT * FROM Categories");
 
         <h2>Adverts</h2>
         <div class="form-group">
+            <input type="text" id="search-term" placeholder="Search...">
+            <button id="search-button">Search</button>
+        </div>
+        <div class="form-group">
             <select id="category-filter">
                 <option value="0">All Categories</option>
                 <?php
@@ -167,8 +187,8 @@ $categories = $db->query("SELECT * FROM Categories");
 
     <script>
         $(document).ready(function() {
-        function fetchAdverts(category = 0) {
-            $.post('main.php', { action: 'fetch', category: category }, function(data) {
+        function fetchAdverts(category = 0, searchTerm = '') {
+            $.post('main.php', { action: 'fetch', category: category, searchTerm: searchTerm }, function(data) {
                 const adverts = JSON.parse(data);
                 let advertsHtml = '';
                 adverts.forEach(advert => {
@@ -211,6 +231,12 @@ $categories = $db->query("SELECT * FROM Categories");
             $('#category-filter').on('change', function() {
                 const category = $(this).val();
                 fetchAdverts(category);
+            });
+            //calls the fetchAdverts on new search term being entered
+            $('#search-button').on('click', function() {
+                const category = $('#category-filter').val();
+                const searchTerm = $('#search-term').val();
+                fetchAdverts(category, searchTerm);
             });
 
             fetchAdverts();
