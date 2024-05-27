@@ -4,7 +4,7 @@ header('Content-Type: application/json'); // Ensure the response is JSON
 $username = $email = $password = "";
 $db = new SQLite3("../grupp.db");
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST["username"];
+    $username = strtolower(trim($_POST["username"]));
     $password = $_POST["password"];
 
     $searchResult = $db->prepare("SELECT * FROM Users WHERE username = :username");

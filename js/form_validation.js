@@ -34,8 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const emailRegex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
         if(!emailRegex.test(input.value)){
             showError(input, "Invalid email");
-        } else {
-            showValid(input);
         }
     }
 
@@ -118,6 +116,8 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault(); // Prevent default form submission
         console.log("Login form submitted"); // Debugging statement
 
+        showValid(loginUsernameInput);
+        showValid(loginPasswordInput);
         checkRequired([loginUsernameInput, loginPasswordInput]);
         let hasErrors = false;
         formValidations.forEach(formValidation => {
