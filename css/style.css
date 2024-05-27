@@ -1,6 +1,6 @@
-@import url(account_forms.css);
-@import url(main.css);
-@import url(login_page.css);
+@import url(account_forms.css); 
+@import url(main.css); 
+@import url(login_page.css); 
 
 :root {
     --darkgrey: #212329;
