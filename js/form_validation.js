@@ -30,13 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function checkEmail(input) {
-        const emailRegex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
-        if(!emailRegex.test(input.value)){
-            showError(input, "Invalid email");
-        }
-    }
-
     function checkPassword(pass) {
         const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
         if(!passwordRegex.test(pass.value)) {
@@ -67,7 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("Register form submitted"); // Debugging statement
 
         checkRequired([usernameInput, emailInput, passwordInput, passwordConfInput]);
-        checkEmail(emailInput);
         checkPassword(passwordInput);
         checkConfPassword(passwordInput, passwordConfInput);
 
