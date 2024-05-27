@@ -173,6 +173,7 @@ $categories = $db->query("SELECT * FROM Categories");
             <h1 id="header-logo">Blocket-ish</h1>
             <div class="header-btns">
                 <a href="logout.php" class="header-link"><div class="header-btns"><button class="login-module-btn" id="header-btns">Logout</button></div></a>
+                <a href="user.php" class="header-link"><div class="header-btns"><button class="nav-btn" id="main-user-btn">My Adverts</button></div></a>
             </div>
         </nav>
     </div>
