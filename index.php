@@ -42,21 +42,26 @@ $_SESSION['userID'] = null;
     </div>
 
     <div class="login-module" id="login-module-id">
-        <div class="module-content">
-            <span class="login-close-btn">&times;</span>
-            <form action="php/login.php" method="POST" class="login-form" id="login-form-id">
-                <div class="form-validation">
-                    <input type="text" class="module-input" id="login-username" name="username" placeholder="Enter your username">
-                    <p>Error Message</p>
-                </div>
-                <div class="form-validation">
-                    <input type="password" class="module-input" id="login-password" name="password" placeholder="Enter your password">
-                    <p>Error Message</p>
-                </div>
-                <input type="submit" class="login-input-btn" value="Login">
-            </form>
+    <div class="module-content">
+        <span class="login-close-btn">&times;</span>
+        <div class="login-header">
+            <h2>Welcome Back!</h2>
+            <p>Please enter your credentials to log in.</p>
         </div>
+        <form action="php/login.php" method="POST" class="login-form" id="login-form-id">
+            <div class="form-validation">
+                <input type="text" class="module-input" id="login-username" name="username" placeholder="Enter your username">
+                <p>Error Message</p>
+            </div>
+            <div class="form-validation">
+                <input type="password" class="module-input" id="login-password" name="password" placeholder="Enter your password">
+                <p>Error Message</p>
+            </div>
+            <input type="submit" class="login-input-btn" value="Login">
+        </form>
     </div>
+</div>
+
 
     <div class="register-module" id="register-module-id">
         <div class="module-content">

@@ -1,6 +1,10 @@
+/* Existing styles */
 :root {
     --errorColor: #f00e0e;
     --validColor: #0add0a;
+    --darkgrey: #212329;
+    --brightred: #F9423D;
+    --white: #fff;
 }
 
 .login-module {
@@ -23,8 +27,11 @@
     position: relative;
     border-radius: 3px;
     min-height: 500px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* Center content vertically */
+    padding: 20px;
 }
 
 .login-close-btn {
@@ -40,17 +47,28 @@
     color: var(--brightred);
 }
 
+.login-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.login-header h2 {
+    margin: 0;
+    color: var(--darkgrey);
+}
+
+.login-header p {
+    margin: 5px 0 0;
+    color: #888;
+}
+
 .login-form {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90%;
-    height: 90%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    flex-grow: 1; /* Ensure the form grows to fill the available space */
 }
 
 .form-validation {
@@ -93,22 +111,26 @@
     border: none;
     height: 2rem;
     width: 100%;
-    box-shadow: 1px 1px 1px rgba(0,0,0,0,0.5);
+    box-shadow: 1px 1px 1px rgba(0,0,0,0.5);
 }
 
 .module-input::placeholder {
-    color: #b1b1b1;
+    color: #6c757d; /* Darkened placeholder color */
+    opacity: 1; /* Ensure the color is not affected by browser defaults */
 }
 
 .login-input-btn {
     width: 80%;
     height: 2rem;
     border-radius: 2px;
-    background-color: var(--brightred);
+    background-color: #4CAF50;
     outline: none;
     border: none;
     color: var(--white);
     font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center the text */
 }
 
 .login-input-btn:hover {
@@ -172,6 +194,9 @@
     border: none;
     color: var(--white);
     font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center the text */
 }
 
 .register-input-btn:hover {

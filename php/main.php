@@ -1,8 +1,5 @@
 <?php
 session_start();
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 
 if (!isset($_SESSION['userID'])) {
     header("Location: ../index.php");
@@ -10,150 +7,6 @@ if (!isset($_SESSION['userID'])) {
 }
 
 $db = new SQLite3("../grupp.db");
-
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action'])) {
-    if ($_POST['action'] == 'publish' && isset($_POST['title'], $_POST['description'], $_POST['category'], $_POST['address'])) {
-        $title = htmlspecialchars($_POST['title']);
-        $description = htmlspecialchars($_POST['description']);
-        $categoryID = intval($_POST['category']);
-        $address = htmlspecialchars($_POST['address']);
-        $userID = $_SESSION['userID'];
-
-        // Handle file upload
-        $target_dir = "../uploads/";  // Corrected path to point to the root uploads directory
-        $target_file = $target_dir . basename($_FILES["image"]["name"]);
-        $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-        $uploadOk = 1;
-        $image = "";
-
-        // Check if image file is an actual image or fake image
-        $check = getimagesize($_FILES["image"]["tmp_name"]);
-        if ($check !== false) {
-            $uploadOk = 1;
-        } else {
-            $uploadOk = 0;
-            echo "File is not an image.";
-        }
-
-        // Check if file already exists
-        if (file_exists($target_file)) {
-            $uploadOk = 0;
-            echo "Sorry, file already exists.";
-        }
-
-        // Check file size
-        if ($_FILES["image"]["size"] > 2000000) {
-            $uploadOk = 0;
-            echo "Sorry, your file is too large.";
-        }
-
-        // Allow certain file formats
-        if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif") {
-            $uploadOk = 0;
-            echo "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
-        }
-
-        // Check if $uploadOk is set to 0 by an error
-        if ($uploadOk == 0) {
-            echo "Sorry, your file was not uploaded.";
-        // if everything is ok, try to upload file
-        } else {
-            if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
-                $image = "uploads/" . basename($_FILES["image"]["name"]);  // Store relative path for image display
-            } else {
-                echo "Sorry, there was an error uploading your file.";
-            }
-        }
-
-        if ($uploadOk == 1) {
-            $stmt = $db->prepare("INSERT INTO Adverts (userID, title, description, categoryID, address, image) VALUES (:userID, :title, :description, :categoryID, :address, :image)");
-            $stmt->bindValue(':userID', $userID, SQLITE3_INTEGER);
-            $stmt->bindValue(':title', $title, SQLITE3_TEXT);
-            $stmt->bindValue(':description', $description, SQLITE3_TEXT);
-            $stmt->bindValue(':categoryID', $categoryID, SQLITE3_INTEGER);
-            $stmt->bindValue(':address', $address, SQLITE3_TEXT);
-            $stmt->bindValue(':image', $image, SQLITE3_TEXT);
-            if ($stmt->execute()) {
-                echo "Advert published successfully.";
-            } else {
-                echo "Failed to publish advert.";
-            }
-        }
-        exit();
-    }
-
-    if ($_POST['action'] == 'fetch') {
-        $categoryFilter = isset($_POST['category']) ? intval($_POST['category']) : 0;
-        $searchTerm = isset($_POST['searchTerm']) ? htmlspecialchars($_POST['searchTerm']) : '';
-        $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
-        $resultsPerPage = isset($_POST['resultsPerPage']) ? intval($_POST['resultsPerPage']) : 10; // Number of results per page, not recieving one should maybe throw an error?
-        $offset = ($page - 1) * $resultsPerPage;
-
-        // Building the query
-        $query = "SELECT Adverts.*, Users.username, Categories.name as categoryName FROM Adverts JOIN Users ON Adverts.userID = Users.userID JOIN Categories ON Adverts.categoryID = Categories.id";
-        if ($categoryFilter > 0) {
-            $query .= " WHERE Adverts.categoryID = :categoryID";
-        }
-        if (!empty($searchTerm)) {
-            $query .= " AND Adverts.title LIKE :searchTerm"; // adds search term to title in database select if search term is not empty.  (consider an OR to search the advert text also)
-        }
-        $query .= " ORDER BY created_at DESC LIMIT :resultsPerPage OFFSET :offset"; // order and selecting the right ads to show for the page
-
-
-        $stmt = $db->prepare($query);
-        //binding
-        if ($categoryFilter > 0) {
-            $stmt->bindValue(':categoryID', $categoryFilter, SQLITE3_INTEGER);
-        }
-         if (!empty($searchTerm)) {
-             $stmt->bindValue(':searchTerm', '%' . $searchTerm . '%', SQLITE3_TEXT);
-         }
-         $stmt->bindValue(':resultsPerPage', $resultsPerPage, SQLITE3_INTEGER);
-         $stmt->bindValue(':offset', $offset, SQLITE3_INTEGER);
-
-        $adverts = $stmt->execute();
-        $result = [];
-        while ($row = $adverts->fetchArray(SQLITE3_ASSOC)) {
-            $result[] = $row;
-        }
-        echo json_encode($result);
-
-        exit();
-
-    }
-    if ($_POST['action'] == 'count') { //counts total results, since the query in fetch only gets results for one page a separate action is needed
-        $categoryFilter = isset($_POST['category']) ? intval($_POST['category']) : 0;
-        $searchTerm = isset($_POST['searchTerm']) ? htmlspecialchars($_POST['searchTerm']) : '';
-    
-        $query = "SELECT COUNT(*) as total 
-                  FROM Adverts 
-                  JOIN Users ON Adverts.userID = Users.userID 
-                  JOIN Categories ON Adverts.categoryID = Categories.id ";
-    
-        if ($categoryFilter > 0) {
-            $query .= " AND Adverts.categoryID = :categoryID";
-        }
-    
-        if (!empty($searchTerm)) {
-            $query .= " AND Adverts.title LIKE :searchTerm";
-        }
-    
-        $stmt = $db->prepare($query);
-    
-        if ($categoryFilter > 0) {
-            $stmt->bindValue(':categoryID', $categoryFilter, SQLITE3_INTEGER);
-        }
-    
-        if (!empty($searchTerm)) {
-            $stmt->bindValue(':searchTerm', '%' . $searchTerm . '%', SQLITE3_TEXT);
-        }
-    
-        $result = $stmt->execute()->fetchArray(SQLITE3_ASSOC);
-    
-        echo json_encode($result);  // Send the total as a JSON 
-        exit();
-    }
-}
 
 $categories = $db->query("SELECT * FROM Categories");
 ?>
@@ -165,7 +18,8 @@ $categories = $db->query("SELECT * FROM Categories");
     <title>Main Page</title>
     <link rel="stylesheet" href="../css/style.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script> <!-- Replace YOUR_API_KEY with your actual Google Maps API key -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script>
+    <script src="../js/main.js" defer></script>
 </head>
 <body>
     <div class="header-container">
@@ -220,101 +74,7 @@ $categories = $db->query("SELECT * FROM Categories");
             </select>
         </div>
         <div class="adverts" id="adverts"></div>
-        <div id="pagination" class="pagination">
-            <h1>pagination</h1>
-        </div>
+        <div id="pagination" class="pagination"></div>
     </div>
-
-    <script>
-        $(document).ready(function() {
-            let currentPage = 1;
-            const defaultResultsPerPage = 10;  // Declare resultsPerPage as a global constant
-
-
-
-        function fetchAdverts(category = 0, searchTerm = '', page = 1, resultsPerPage = defaultResultsPerPage) {
-            $.post('main.php', { action: 'fetch', category: category, searchTerm: searchTerm, page: page, resultsPerPage: resultsPerPage }, function(data) {  
-                const adverts = JSON.parse(data);
-                let advertsHtml = '';
-                adverts.forEach(advert => {
-                    advertsHtml += `
-                        <div class="advert">
-                            <h3>${advert.title}</h3>
-                            <img src="../${advert.image}" alt="${advert.title}" class="uploaded-image">  <!-- Corrected path to display image -->
-                            <p>${advert.description}</p>
-                            <small>Posted by: ${advert.username} (${advert.address}) in ${advert.categoryName} on ${advert.created_at}</small>
-                        </div>
-                    `;
-                });
-                $('#adverts').html(advertsHtml);
-                updatePagination(page);
-            }).fail(function(jqXHR, textStatus, errorThrown) {
-                console.error('Error fetching adverts:', textStatus, errorThrown);
-            });
-        }
-
-        function updatePagination(currentPage) {
-            const category = $('#category-filter').val();
-            const searchTerm = $('#search-term').val();
-
-            $.post('main.php', { action: 'count', category: category, searchTerm: searchTerm }, function(data) {
-
-                const totalResults = parseInt(JSON.parse(data).total);
-                const totalPages = (totalResults%defaultResultsPerPage == 0 ? totalResults/defaultResultsPerPage : parseInt(totalResults/defaultResultsPerPage) +1) //calcs correct amount of  pages
-
-                let paginationHtml = '';
-
-                for (let i = 1; i <= totalPages; i++) {
-                    paginationHtml += `<button class="page-btn${i === currentPage ? ' active' : ''}" data-page="${i}">${i}</button>`;
-                }
-                $('#pagination').html(paginationHtml);
-
-                $('.page-btn').on('click', function() {
-                    const page = $(this).data('page');
-                    currentPage = page;
-                    fetchAdverts(category, searchTerm, page);
-                    window.scrollTo(0, 0);
-                });
-            }).fail(function(jqXHR, textStatus, errorThrown) {
-                console.error('Error fetching total results:', textStatus, errorThrown);
-            });
-        }
-
-            $('#advert-form').on('submit', function(e) {
-                e.preventDefault();
-                const formData = new FormData(this);
-                formData.append('action', 'publish');
-                $.ajax({
-                    url: 'main.php',
-                    type: 'POST',
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    success: function(response) {
-                        console.log('Advert published:', response);
-                        fetchAdverts();
-                        $('#advert-form')[0].reset();
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        console.error('Error publishing advert:', textStatus, errorThrown);
-                    }
-                });
-            });
-
-            $('#category-filter').on('change', function() {
-                const category = $(this).val();
-                fetchAdverts(category);
-            });
-            //calls the fetchAdverts on new search term being entered
-            $('#search-button').on('click', function() {
-                const category = $('#category-filter').val();
-                const searchTerm = $('#search-term').val();
-                fetchAdverts(category, searchTerm);
-            });
-
-
-            fetchAdverts();
-        });
-    </script>
 </body>
 </html>
