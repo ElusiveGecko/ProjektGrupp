@@ -85,18 +85,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action'])) {
     if ($_POST['action'] == 'fetch') {
         $categoryFilter = isset($_POST['category']) ? intval($_POST['category']) : 0;
         $searchTerm = isset($_POST['searchTerm']) ? htmlspecialchars($_POST['searchTerm']) : '';
+        $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
+        $resultsPerPage = isset($_POST['resultsPerPage']) ? intval($_POST['resultsPerPage']) : 10; // Number of results per page, not recieving one should maybe throw an error?
+        $offset = ($page - 1) * $resultsPerPage;
 
-
+        // Building the query
         $query = "SELECT Adverts.*, Users.username, Categories.name as categoryName FROM Adverts JOIN Users ON Adverts.userID = Users.userID JOIN Categories ON Adverts.categoryID = Categories.id";
-        // Adds catg filter in database select if category is selected
         if ($categoryFilter > 0) {
             $query .= " WHERE Adverts.categoryID = :categoryID";
         }
-        // adds search term to title in database select if search term is not empty.  (consider an OR to search the advert text also)
         if (!empty($searchTerm)) {
-            $query .= " AND Adverts.title LIKE :searchTerm";
+            $query .= " AND Adverts.title LIKE :searchTerm"; // adds search term to title in database select if search term is not empty.  (consider an OR to search the advert text also)
         }
-        $query .= " ORDER BY created_at DESC";
+        $query .= " ORDER BY created_at DESC LIMIT :resultsPerPage OFFSET :offset"; // order and selecting the right ads to show for the page
+
 
         $stmt = $db->prepare($query);
         //binding
@@ -106,6 +108,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action'])) {
          if (!empty($searchTerm)) {
              $stmt->bindValue(':searchTerm', '%' . $searchTerm . '%', SQLITE3_TEXT);
          }
+         $stmt->bindValue(':resultsPerPage', $resultsPerPage, SQLITE3_INTEGER);
+         $stmt->bindValue(':offset', $offset, SQLITE3_INTEGER);
 
         $adverts = $stmt->execute();
         $result = [];
@@ -116,6 +120,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action'])) {
 
         exit();
 
+    }
+    if ($_POST['action'] == 'count') { //counts total results, since the query in fetch only gets results for one page a separate action is needed
+        $categoryFilter = isset($_POST['category']) ? intval($_POST['category']) : 0;
+        $searchTerm = isset($_POST['searchTerm']) ? htmlspecialchars($_POST['searchTerm']) : '';
+    
+        $query = "SELECT COUNT(*) as total 
+                  FROM Adverts 
+                  JOIN Users ON Adverts.userID = Users.userID 
+                  JOIN Categories ON Adverts.categoryID = Categories.id ";
+    
+        if ($categoryFilter > 0) {
+            $query .= " AND Adverts.categoryID = :categoryID";
+        }
+    
+        if (!empty($searchTerm)) {
+            $query .= " AND Adverts.title LIKE :searchTerm";
+        }
+    
+        $stmt = $db->prepare($query);
+    
+        if ($categoryFilter > 0) {
+            $stmt->bindValue(':categoryID', $categoryFilter, SQLITE3_INTEGER);
+        }
+    
+        if (!empty($searchTerm)) {
+            $stmt->bindValue(':searchTerm', '%' . $searchTerm . '%', SQLITE3_TEXT);
+        }
+    
+        $result = $stmt->execute()->fetchArray(SQLITE3_ASSOC);
+    
+        echo json_encode($result);  // Send the total as a JSON 
+        exit();
     }
 }
 
@@ -183,12 +219,20 @@ $categories = $db->query("SELECT * FROM Categories");
             </select>
         </div>
         <div class="adverts" id="adverts"></div>
+        <div id="pagination" class="pagination">
+            <h1>pagination</h1>
+        </div>
     </div>
 
     <script>
         $(document).ready(function() {
-        function fetchAdverts(category = 0, searchTerm = '') {
-            $.post('main.php', { action: 'fetch', category: category, searchTerm: searchTerm }, function(data) {
+            let currentPage = 1;
+            const defaultResultsPerPage = 10;  // Declare resultsPerPage as a global constant
+
+
+
+        function fetchAdverts(category = 0, searchTerm = '', page = 1, resultsPerPage = defaultResultsPerPage) {
+            $.post('main.php', { action: 'fetch', category: category, searchTerm: searchTerm, page: page, resultsPerPage: resultsPerPage }, function(data) {  
                 const adverts = JSON.parse(data);
                 let advertsHtml = '';
                 adverts.forEach(advert => {
@@ -202,8 +246,36 @@ $categories = $db->query("SELECT * FROM Categories");
                     `;
                 });
                 $('#adverts').html(advertsHtml);
+                updatePagination(page);
             }).fail(function(jqXHR, textStatus, errorThrown) {
                 console.error('Error fetching adverts:', textStatus, errorThrown);
+            });
+        }
+
+        function updatePagination(currentPage) {
+            const category = $('#category-filter').val();
+            const searchTerm = $('#search-term').val();
+
+            $.post('main.php', { action: 'count', category: category, searchTerm: searchTerm }, function(data) {
+
+                const totalResults = parseInt(JSON.parse(data).total);
+                const totalPages = (totalResults%defaultResultsPerPage == 0 ? totalResults/defaultResultsPerPage : parseInt(totalResults/defaultResultsPerPage) +1) //calcs correct amount of  pages
+
+                let paginationHtml = '';
+
+                for (let i = 1; i <= totalPages; i++) {
+                    paginationHtml += `<button class="page-btn${i === currentPage ? ' active' : ''}" data-page="${i}">${i}</button>`;
+                }
+                $('#pagination').html(paginationHtml);
+
+                $('.page-btn').on('click', function() {
+                    const page = $(this).data('page');
+                    currentPage = page;
+                    fetchAdverts(category, searchTerm, page);
+                    window.scrollTo(0, 0);
+                });
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+                console.error('Error fetching total results:', textStatus, errorThrown);
             });
         }
 
@@ -238,6 +310,7 @@ $categories = $db->query("SELECT * FROM Categories");
                 const searchTerm = $('#search-term').val();
                 fetchAdverts(category, searchTerm);
             });
+
 
             fetchAdverts();
         });

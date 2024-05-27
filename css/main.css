@@ -32,3 +32,20 @@
     display: block;
     margin: 10px 0;
 }
+
+.page-btn {/* thrown together for test*/
+    padding: 5px 10px;
+    margin: 0 2px;
+    border: none;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    transition: background-color 0.15s, color 0.15s;  
+}
+.page-btn:hover {/* indicates hover*/
+    background-color: rgb(87, 85, 85);  
+    color: white;  
+}
+.page-btn.active {/* indicates current page */
+    background-color: rgb(87, 85, 85);
+    color: white;
+}
