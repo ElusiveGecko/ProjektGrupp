@@ -36,22 +36,28 @@ function checkEmailAvailability(email, showError, showValid, emailInput) {
     xhr.send(`email=${encodeURIComponent(email)}`);
 }
 
-function loginUser(form, showError, loginUsernameInput, loginPasswordInput) {
+function loginUser(form) {
     const formData = new FormData(form);
     const xhr = new XMLHttpRequest();
     xhr.open('POST', 'php/login.php', true);
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.onload = function() {
+        console.log(xhr.responseText); // Debugging: Log the raw response
         if (xhr.status === 200) {
-            const response = JSON.parse(xhr.responseText);
-            if (response.status === 'success') {
-                window.location.href = 'php/main.php';
-            } else {
-                if (response.type === 'password') {
-                    showError(loginPasswordInput, response.message);
-                } else if (response.type === 'username') {
-                    showError(loginUsernameInput, response.message);
+            try {
+                const response = JSON.parse(xhr.responseText);
+                if (response.status === 'success') {
+                    window.location.href = 'php/main.php';
+                } else {
+                    if (response.type === 'password') {
+                        showError(loginPasswordInput, response.message);
+                    } else if (response.type === 'username') {
+                        showError(loginUsernameInput, response.message);
+                    }
                 }
+            } catch (e) {
+                console.error('Error parsing JSON:', e);
+                console.error('Response:', xhr.responseText);
             }
         } else {
             console.error("Request failed. Status: " + xhr.status);
@@ -59,3 +65,4 @@ function loginUser(form, showError, loginUsernameInput, loginPasswordInput) {
     };
     xhr.send(new URLSearchParams(formData));
 }
+

@@ -20,11 +20,12 @@ $_SESSION['userID'] = null;
     <div class="header-container">
         <nav class="header">
             <h1 id="header-logo">Projektgrupp 4</h1>
-            <div class="header-btns">
-                <div class="header-btns"><button class="login-module-btn" id="header-btns">Login</button></div>
+            <div class="header-links">
+                <a href="#" class="header-link header-btn login-module-btn">Login</a>
             </div>
         </nav>
     </div>
+
 
     <div class="home">
         <div class="home-container">

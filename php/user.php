@@ -35,16 +35,16 @@ $adverts = $db->query("SELECT Adverts.*, Categories.name as categoryName FROM Ad
     <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script> <!-- Replace YOUR_API_KEY with your actual Google Maps API key -->
 </head>
 <body>
-<div class="header-container">
+    <div class="header-container">
         <nav class="header">
             <h1 id="header-logo">Blocket-ish</h1>
-            <div class="header-btns">
-                <a href="logout.php" class="header-link"><div class="header-btns"><button class="login-module-btn" id="header-btns">Logout</button></div></a>
-                <a href="main.php" class="header-link"><div class="header-btns"><button class="nav-btn" id="main-user-btn">Back to Main</button></div></a>
-            </div>
+            <div class="header-links">
+                <a href="logout.php" class="header-link header-btn">Logout</a>
+                <a href="main.php" class="header-link header-btn">Back to Main</a>
             </div>
         </nav>
     </div>
+
     <div class="container">
         <h1>Your Adverts</h1>
         <div class="adverts" id="adverts">

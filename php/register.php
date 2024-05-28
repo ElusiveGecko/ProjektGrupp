@@ -9,7 +9,7 @@ try {
     $validationError = false;
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $recaptchaSecret = 'ADD_SECRET_KEY_HERE'; // Remove or replace this key for security reasons
+        $recaptchaSecret = 'YOUR-API-KEY-HERE'; // Remove or replace this key for security reasons
         $recaptchaResponse = $_POST['g-recaptcha-response'];
 
         // Verify reCAPTCHA response
