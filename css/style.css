@@ -4,7 +4,7 @@
 
 :root {
     --darkgrey: #212329;
-    --brightred: #F9423D;
+    --brightred: #4CAF50; /* Changed color to match main page */
     --white: #fff;
 }
 
@@ -33,7 +33,7 @@ body {
 }
 
 #header-logo {
-    color: white;
+    color: var(--brightred);
     justify-self: start;
     margin-left: 15px;
 }

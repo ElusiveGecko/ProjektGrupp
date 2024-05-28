@@ -19,7 +19,7 @@ $_SESSION['userID'] = null;
 
     <div class="header-container">
         <nav class="header">
-            <h1 id="header-logo">Blocket-ish</h1>
+            <h1 id="header-logo">Projektgrupp 4</h1>
             <div class="header-btns">
                 <div class="header-btns"><button class="login-module-btn" id="header-btns">Login</button></div>
             </div>
@@ -30,8 +30,8 @@ $_SESSION['userID'] = null;
         <div class="home-container">
             <div class="home-content">
                 <div class="home-text">
-                    <h1>Placeholder</h1>
-                    <p>Placeholding place Placeholding place place Placeholding place  Placeholding place Placeholding place!</p>
+                    <h1>Your #1 online marketplace</h1>
+                    <p>For all of your buying and selling needs!</p>
                 </div>
                 <div class="btn-container">
                     <button class="register-module-btn" id="account-btn">Get Started Today!</button>

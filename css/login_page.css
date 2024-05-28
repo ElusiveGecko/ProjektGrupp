@@ -19,11 +19,17 @@
     margin-bottom: 45%;
     margin-right: 25%;
     color: var(--darkgrey);
+    height: 100%;
+    width: 100%;
 }
 
 .home-text {
-    margin-left: 55%;
     width: 100%;
+    text-align: center;
+}
+
+.home-text h1 {
+    font-size: 1.8rem;
 }
 
 .home-img-container {
@@ -36,10 +42,10 @@
 }
 
 .btn-container {
-    position: relative;
-    top: 40px;
-    left: 40%;
-    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 35%;
 }
 
 #account-btn {

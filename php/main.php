@@ -24,7 +24,7 @@ $categories = $db->query("SELECT * FROM Categories");
 <body>
     <div class="header-container">
         <nav class="header">
-            <h1 id="header-logo">Blocket-ish</h1>
+            <h1 id="header-logo">Projektgrupp 4</h1>
             <div class="header-btns">
                 <a href="logout.php" class="header-link"><div class="header-btns"><button class="login-module-btn" id="header-btns">Logout</button></div></a>
                 <a href="user.php" class="header-link"><div class="header-btns"><button class="nav-btn" id="main-user-btn">My Adverts</button></div></a>
