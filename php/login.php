@@ -14,14 +14,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $result = $searchResult->execute();
 
     if ($row = $result->fetchArray(SQLITE3_ASSOC)) {
-        $stored_hashed_password = $row['password'];
-        if (password_verify($password, $stored_hashed_password)) {
-            $_SESSION['username'] = $row['username'];
-            $_SESSION['userID'] = $row['userID']; 
-            $_SESSION['role'] = $row['role']; // Set the role in the session
-            echo json_encode(array("status" => "success"));
+        if ($row['is_banned'] == 'true') { // Check if the user is banned
+            echo json_encode(array("status" => "error", "type" => "banned", "message" => "This account is banned."));
         } else {
-            echo json_encode(array("status" => "error", "type" => "password", "message" => "Password does not match username"));
+            $stored_hashed_password = $row['password'];
+            if (password_verify($password, $stored_hashed_password)) {
+                $_SESSION['username'] = $row['username'];
+                $_SESSION['userID'] = $row['userID']; 
+                $_SESSION['role'] = $row['role']; // Set the role in the session
+                echo json_encode(array("status" => "success"));
+            } else {
+                echo json_encode(array("status" => "error", "type" => "password", "message" => "Password does not match username"));
+            }
         }
     } else {
         echo json_encode(array("status" => "error", "type" => "username", "message" => "Username does not exist"));

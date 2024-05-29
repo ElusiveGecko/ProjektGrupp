@@ -53,6 +53,8 @@ function loginUser(form, showError, loginUsernameInput, loginPasswordInput) {
                         showError(loginPasswordInput, response.message);
                     } else if (response.type === 'username') {
                         showError(loginUsernameInput, response.message);
+                    } else if (response.type === 'banned') {
+                        showError(loginUsernameInput, response.message);
                     }
                 }
             } catch (e) {
