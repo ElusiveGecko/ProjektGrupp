@@ -36,7 +36,7 @@ function checkEmailAvailability(email, showError, showValid, emailInput) {
     xhr.send(`email=${encodeURIComponent(email)}`);
 }
 
-function loginUser(form) {
+function loginUser(form, showError, loginUsernameInput, loginPasswordInput) {
     const formData = new FormData(form);
     const xhr = new XMLHttpRequest();
     xhr.open('POST', 'php/login.php', true);
