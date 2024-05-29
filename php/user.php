@@ -37,7 +37,7 @@ $adverts = $db->query("SELECT Adverts.*, Categories.name as categoryName FROM Ad
 <body>
     <div class="header-container">
         <nav class="header">
-            <h1 id="header-logo">Blocket-ish</h1>
+            <h1 id="header-logo">Projektgrupp 4</h1>
             <div class="header-links">
                 <a href="logout.php" class="header-link header-btn">Logout</a>
                 <a href="main.php" class="header-link header-btn">Back to Main</a>
